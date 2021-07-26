@@ -1,0 +1,46 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31410.357
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TurnerSoftware.CascadingStyles", "src\TurnerSoftware.CascadingStyles\TurnerSoftware.CascadingStyles.csproj", "{45249637-A01D-4B8E-876F-161967FED8A4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "global", "global", "{FB132D1C-FE21-4E48-A42E-4221F324DD75}"
+	ProjectSection(SolutionItems) = preProject
+		.appveyor.yml = .appveyor.yml
+		.codecov.yml = .codecov.yml
+		.editorconfig = .editorconfig
+		.gitignore = .gitignore
+		CodeCoverage.runsettings = CodeCoverage.runsettings
+		License.txt = License.txt
+		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{D377D5E5-DF64-4653-8E55-659E13D77CC8}"
+	ProjectSection(SolutionItems) = preProject
+		src\Directory.Build.props = src\Directory.Build.props
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{497F540B-4467-4D1F-9D8C-9DA30B1E87CA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{45249637-A01D-4B8E-876F-161967FED8A4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{45249637-A01D-4B8E-876F-161967FED8A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{45249637-A01D-4B8E-876F-161967FED8A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{45249637-A01D-4B8E-876F-161967FED8A4}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{45249637-A01D-4B8E-876F-161967FED8A4} = {D377D5E5-DF64-4653-8E55-659E13D77CC8}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D36D807E-1EA4-4509-8E9A-410F930D5864}
+	EndGlobalSection
+EndGlobal

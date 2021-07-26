@@ -1,0 +1,35 @@
+<Project>
+  
+  <PropertyGroup>
+    <RootNamespace>TurnerSoftware.CascadingStyles</RootNamespace>
+
+    <Company>Turner Software</Company>
+
+    <PackageId>$(AssemblyName)</PackageId>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <PackageLicenseFile>License.txt</PackageLicenseFile>
+    <PackageProjectUrl>https://github.com/TurnerSoftware/CascadingStyles</PackageProjectUrl>
+    <PackageBaseTags>utilities;robots</PackageBaseTags>
+    
+    <RepositoryUrl>https://github.com/TurnerSoftware/CascadingStyles.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryBranch>main</RepositoryBranch>
+
+    <!-- SourceLink Support -->
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+
+    <LangVersion>Latest</LangVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+    <PackageReference Include="TurnerSoftware.BuildVersioning" Version="0.2.1" PrivateAssets="All" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\License.txt" Pack="true" PackagePath="$(PackageLicenseFile)"/>
+  </ItemGroup>
+
+</Project>
