@@ -2,6 +2,10 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
+    <AssemblyName>TurnerSoftware.CascadingStyles</AssemblyName>
+    <Description>Serializer for CSS</Description>
+    <PackageTags>$(PackageBaseTags)</PackageTags>
+    <Authors>James Turner</Authors>
   </PropertyGroup>
 
 </Project>

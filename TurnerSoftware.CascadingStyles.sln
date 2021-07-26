@@ -23,6 +23,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{D377D5E5-DF6
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{497F540B-4467-4D1F-9D8C-9DA30B1E87CA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TurnerSoftware.CascadingStyles.Tests", "tests\TurnerSoftware.CascadingStyles.Tests\TurnerSoftware.CascadingStyles.Tests.csproj", "{8AFFC85A-171E-4D69-BD96-AF3257075A85}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,12 +35,17 @@ Global
 		{45249637-A01D-4B8E-876F-161967FED8A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{45249637-A01D-4B8E-876F-161967FED8A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{45249637-A01D-4B8E-876F-161967FED8A4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8AFFC85A-171E-4D69-BD96-AF3257075A85}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8AFFC85A-171E-4D69-BD96-AF3257075A85}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8AFFC85A-171E-4D69-BD96-AF3257075A85}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8AFFC85A-171E-4D69-BD96-AF3257075A85}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{45249637-A01D-4B8E-876F-161967FED8A4} = {D377D5E5-DF64-4653-8E55-659E13D77CC8}
+		{8AFFC85A-171E-4D69-BD96-AF3257075A85} = {497F540B-4467-4D1F-9D8C-9DA30B1E87CA}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D36D807E-1EA4-4509-8E9A-410F930D5864}
