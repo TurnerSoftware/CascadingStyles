@@ -142,10 +142,10 @@ namespace TurnerSoftware.CascadingStyles
 					token = ConsumeNumberSignToToken();
 					break;
 				case '(':
-					token = ConsumeCurrentToToken(CssTokenType.RoundBracketOpen);
+					token = ConsumeCurrentToToken(CssTokenType.LeftParenthesis);
 					break;
 				case ')':
-					token = ConsumeCurrentToToken(CssTokenType.RoundBracketClose);
+					token = ConsumeCurrentToToken(CssTokenType.RightParenthesis);
 					break;
 				case '+':
 					token = ConsumePlusSignToToken();
