@@ -6,6 +6,24 @@ namespace TurnerSoftware.CascadingStyles.Tests
 	public class CssReaderTests
 	{
 		[TestMethod]
+		public void String_Good()
+		{
+			var reader = new CssReader("\"Hello World\"");
+			Assert.IsTrue(reader.NextToken(out var token));
+			Assert.AreEqual(CssTokenType.String, token.Type);
+			Assert.AreEqual("Hello World", token.RawValue.ToString());
+		}
+
+		[TestMethod]
+		public void String_Bad_NewLine()
+		{
+			var reader = new CssReader("\"Hello\nWorld\"");
+			Assert.IsTrue(reader.NextToken(out var token));
+			Assert.AreEqual(CssTokenType.BadString, token.Type);
+			Assert.AreEqual(string.Empty, token.RawValue.ToString());
+		}
+
+		[TestMethod]
 		public void Number_Integer()
 		{
 			var reader = new CssReader("1");

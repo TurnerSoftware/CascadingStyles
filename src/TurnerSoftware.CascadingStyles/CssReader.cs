@@ -304,6 +304,9 @@ namespace TurnerSoftware.CascadingStyles
 		{
 			var quoteChar = Current;
 
+			ConsumeCurrent();
+			StartNewCaptureRegion();
+
 			// Repeatedly consume the next input code point from the stream:
 			while (true)
 			{
@@ -312,14 +315,14 @@ namespace TurnerSoftware.CascadingStyles
 				// Ending code point - return the <string-token>
 				if (Current == quoteChar)
 				{
-					goto EndFound;
+					break;
 				}
 
 				switch (Current)
 				{
 					case EndOfFile:
 						// This is a parse error. Return the <string-token>.
-						goto EndFound;
+						return ConsumeRegionToToken(CssTokenType.String);
 					case '\n':
 						// This is a parse error. Reconsume the current input code point,
 						// create a <bad-string-token>, and return it. 
@@ -329,7 +332,8 @@ namespace TurnerSoftware.CascadingStyles
 						switch (Current)
 						{
 							case EndOfFile:
-								goto EndFound;
+								// Nothing else can be done - just return what we have
+								return ConsumeRegionToToken(CssTokenType.String);
 							case '\n':
 								continue;
 							default:
@@ -340,8 +344,13 @@ namespace TurnerSoftware.CascadingStyles
 				}
 			}
 
-			EndFound:
-			return ConsumeRegionToToken(CssTokenType.String);
+			var result = ConsumeRegionToToken(CssTokenType.String);
+			
+			// Consume the ending code point and start a new capture region
+			ConsumeCurrent();
+			StartNewCaptureRegion();
+
+			return result;
 		}
 
 		/// <summary>
