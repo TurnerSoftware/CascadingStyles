@@ -57,10 +57,25 @@ namespace TurnerSoftware.CascadingStyles
 
 	public enum CssTokenFlag
 	{
+		/// <summary>
+		/// No token flag is set
+		/// </summary>
 		None,
+		/// <summary>
+		/// The default flag for &lt;hash-token&gt;.
+		/// </summary>
 		Hash_Unrestricted,
+		/// <summary>
+		/// Defines that the &lt;hash-token&gt; is a valid ID.
+		/// </summary>
 		Hash_Id,
+		/// <summary>
+		/// Whether a &lt;number-token> or &lt;dimension&gt; is a whole number.
+		/// </summary>
 		Number_Integer,
+		/// <summary>
+		/// Whether a &lt;number-token> or &lt;dimension&gt; is a fraction.
+		/// </summary>
 		Number_Number
 	}
 }

@@ -123,6 +123,8 @@ namespace TurnerSoftware.CascadingStyles
 				return false;
 			}
 
+			ConsumeCommentsIfAny();
+
 			switch (Current)
 			{
 				case ' ':
@@ -223,13 +225,46 @@ namespace TurnerSoftware.CascadingStyles
 					{
 						token = ConsumeIdentifierLikeToToken();
 					}
-					else
+					else if (Current != EndOfFile)
 					{
 						token = ConsumeCurrentToToken(CssTokenType.Delimiter);
+					}
+					else
+					{
+						token = default;
+						return false;
 					}
 					break;
 			}
 			return true;
+		}
+
+		/// <summary>
+		/// <a href="https://drafts.csswg.org/css-syntax/#consume-comments">4.3.2. Consume comments</a>
+		/// </summary>
+		private void ConsumeCommentsIfAny()
+		{
+			// If the next two input code point are U+002F SOLIDUS (/) followed by a U+002A ASTERISK (*),
+			// consume them and all following code points up to and including the first U+002A ASTERISK (*)
+			// followed by a U+002F SOLIDUS (/), or up to an EOF code point.
+			if (Current == '/' && Peek() == '*')
+			{
+				var matchIndex = InputStream[CurrentIndex..].IndexOf("*/");
+				// No closing comment found / it closes at the end of the file
+				if (matchIndex == -1)
+				{
+					// This is a parse error
+					// Reset the region to the end of the data
+					RegionStartIndex = InputStream.Length;
+					IndexOffset = 0;
+				}
+				else
+				{
+					// Reset the region to just after the match
+					RegionStartIndex = matchIndex + 2;
+					IndexOffset = 0;
+				}
+			}
 		}
 
 		/// <summary>
@@ -357,6 +392,7 @@ namespace TurnerSoftware.CascadingStyles
 			// consume a numeric token, and return it. 
 			if (IsStartOfNumber())
 			{
+				Reconsume();
 				return ConsumeNumberToToken();
 			}
 
@@ -379,6 +415,7 @@ namespace TurnerSoftware.CascadingStyles
 			// consume a numeric token, and return it. 
 			if (IsStartOfNumber())
 			{
+				Reconsume();
 				return ConsumeNumberToToken();
 			}
 			// Otherwise, if the next 2 input code points are U+002D HYPHEN-MINUS U+003E GREATER-THAN SIGN (->),
@@ -778,7 +815,8 @@ namespace TurnerSoftware.CascadingStyles
 		private bool IsValidIdentifierStartCodePoint()
 		{
 			const char CONTROL_CHARACTER = '\u0080';
-			return char.IsLetter(Current) || Current == '_' || Current >= CONTROL_CHARACTER;
+			// The EndOfFile check is to prevent the unbounded >= CONTROL_CHARACTER allowing capture of the EndOfFile (char.MaxValue)
+			return char.IsLetter(Current) || Current == '_' || (Current >= CONTROL_CHARACTER && Current < EndOfFile);
 		}
 		/// <summary>
 		/// <a href="https://drafts.csswg.org/css-syntax/#identifier-code-point">4.2. Definitions (Identifier code point)</a>
@@ -787,7 +825,8 @@ namespace TurnerSoftware.CascadingStyles
 		private bool IsValidIdentifierCodePoint()
 		{
 			const char CONTROL_CHARACTER = '\u0080';
-			return char.IsLetterOrDigit(Current) || Current == '-' || Current == '_' || Current >= CONTROL_CHARACTER;
+			// The EndOfFile check is to prevent the unbounded >= CONTROL_CHARACTER allowing capture of the EndOfFile (char.MaxValue)
+			return char.IsLetterOrDigit(Current) || Current == '-' || Current == '_' || (Current >= CONTROL_CHARACTER && Current < EndOfFile);
 		}
 
 		private bool IsValidEscapeSequence()
