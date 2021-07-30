@@ -17,14 +17,14 @@ namespace TurnerSoftware.CascadingStyles.Tests
 		{
 			var reader = new CssReader("(");
 			Assert.IsTrue(reader.NextToken(out var token));
-			Assert.AreEqual(CssTokenType.RoundBracketOpen, token.Type);
+			Assert.AreEqual(CssTokenType.LeftParenthesis, token.Type);
 		}
 		[TestMethod]
 		public void SimpleToken_RightParenthesis()
 		{
 			var reader = new CssReader(")");
 			Assert.IsTrue(reader.NextToken(out var token));
-			Assert.AreEqual(CssTokenType.RoundBracketClose, token.Type);
+			Assert.AreEqual(CssTokenType.RightParenthesis, token.Type);
 		}
 		[TestMethod]
 		public void SimpleToken_Comma()
