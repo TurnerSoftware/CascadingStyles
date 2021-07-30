@@ -663,7 +663,6 @@ namespace TurnerSoftware.CascadingStyles
 		private void ConsumeNumber(out ReadOnlySpan<char> number, out CssTokenFlag flags)
 		{
 			var startIndex = CurrentIndex;
-			var endIndex = startIndex;
 
 			// Initially set type to "integer".
 			flags = CssTokenFlag.Number_Integer;

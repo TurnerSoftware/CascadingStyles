@@ -15,7 +15,7 @@ namespace TurnerSoftware.CascadingStyles.Tests
 		}
 
 		[TestMethod]
-		public void String_Bad_NewLine()
+		public void BadString_NewLine()
 		{
 			var reader = new CssReader("\"Hello\nWorld\"");
 			Assert.IsTrue(reader.NextToken(out var token));
@@ -32,7 +32,6 @@ namespace TurnerSoftware.CascadingStyles.Tests
 			Assert.AreEqual(CssTokenFlag.Number_Integer, token.Flags);
 			Assert.AreEqual("1", token.RawValue.ToString());
 		}
-
 		[TestMethod]
 		public void Number_Integer_LeadingPlus()
 		{
@@ -42,7 +41,6 @@ namespace TurnerSoftware.CascadingStyles.Tests
 			Assert.AreEqual(CssTokenFlag.Number_Integer, token.Flags);
 			Assert.AreEqual("+1", token.RawValue.ToString());
 		}
-
 		[TestMethod]
 		public void Number_Integer_LeadingMinus()
 		{
@@ -52,15 +50,59 @@ namespace TurnerSoftware.CascadingStyles.Tests
 			Assert.AreEqual(CssTokenFlag.Number_Integer, token.Flags);
 			Assert.AreEqual("-1", token.RawValue.ToString());
 		}
-
 		[TestMethod]
-		public void Number_Float()
+		public void Number_Float_SingleDigit()
 		{
 			var reader = new CssReader("1.0");
 			Assert.IsTrue(reader.NextToken(out var token));
 			Assert.AreEqual(CssTokenType.Number, token.Type);
 			Assert.AreEqual(CssTokenFlag.Number_Number, token.Flags);
 			Assert.AreEqual("1.0", token.RawValue.ToString());
+		}
+		[TestMethod]
+		public void Number_Float_MultiDigit()
+		{
+			var reader = new CssReader("1.01");
+			Assert.IsTrue(reader.NextToken(out var token));
+			Assert.AreEqual(CssTokenType.Number, token.Type);
+			Assert.AreEqual(CssTokenFlag.Number_Number, token.Flags);
+			Assert.AreEqual("1.01", token.RawValue.ToString());
+		}
+		[TestMethod]
+		public void Number_ScientificNotation_Lower_Positive()
+		{
+			var reader = new CssReader("1e+1");
+			Assert.IsTrue(reader.NextToken(out var token));
+			Assert.AreEqual(CssTokenType.Number, token.Type);
+			Assert.AreEqual(CssTokenFlag.Number_Number, token.Flags);
+			Assert.AreEqual("1e+1", token.RawValue.ToString());
+		}
+		[TestMethod]
+		public void Number_ScientificNotation_Lower_Negative()
+		{
+			var reader = new CssReader("1e-1");
+			Assert.IsTrue(reader.NextToken(out var token));
+			Assert.AreEqual(CssTokenType.Number, token.Type);
+			Assert.AreEqual(CssTokenFlag.Number_Number, token.Flags);
+			Assert.AreEqual("1e-1", token.RawValue.ToString());
+		}
+		[TestMethod]
+		public void Number_ScientificNotation_Upper_Positive()
+		{
+			var reader = new CssReader("1E+1");
+			Assert.IsTrue(reader.NextToken(out var token));
+			Assert.AreEqual(CssTokenType.Number, token.Type);
+			Assert.AreEqual(CssTokenFlag.Number_Number, token.Flags);
+			Assert.AreEqual("1E+1", token.RawValue.ToString());
+		}
+		[TestMethod]
+		public void Number_ScientificNotation_Upper_Negative()
+		{
+			var reader = new CssReader("1E-1");
+			Assert.IsTrue(reader.NextToken(out var token));
+			Assert.AreEqual(CssTokenType.Number, token.Type);
+			Assert.AreEqual(CssTokenFlag.Number_Number, token.Flags);
+			Assert.AreEqual("1E-1", token.RawValue.ToString());
 		}
 
 		[TestMethod]
