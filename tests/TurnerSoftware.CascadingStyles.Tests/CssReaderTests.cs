@@ -6,6 +6,77 @@ namespace TurnerSoftware.CascadingStyles.Tests
 	public class CssReaderTests
 	{
 		[TestMethod]
+		public void NextToken_NoTokens()
+		{
+			var reader = new CssReader(string.Empty);
+			Assert.IsFalse(reader.NextToken(out _));
+		}
+
+		[TestMethod]
+		public void SimpleToken_LeftParenthesis()
+		{
+			var reader = new CssReader("(");
+			Assert.IsTrue(reader.NextToken(out var token));
+			Assert.AreEqual(CssTokenType.RoundBracketOpen, token.Type);
+		}
+		[TestMethod]
+		public void SimpleToken_RightParenthesis()
+		{
+			var reader = new CssReader(")");
+			Assert.IsTrue(reader.NextToken(out var token));
+			Assert.AreEqual(CssTokenType.RoundBracketClose, token.Type);
+		}
+		[TestMethod]
+		public void SimpleToken_Comma()
+		{
+			var reader = new CssReader(",");
+			Assert.IsTrue(reader.NextToken(out var token));
+			Assert.AreEqual(CssTokenType.Comma, token.Type);
+		}
+		[TestMethod]
+		public void SimpleToken_Colon()
+		{
+			var reader = new CssReader(":");
+			Assert.IsTrue(reader.NextToken(out var token));
+			Assert.AreEqual(CssTokenType.Colon, token.Type);
+		}
+		[TestMethod]
+		public void SimpleToken_Semicolon()
+		{
+			var reader = new CssReader(";");
+			Assert.IsTrue(reader.NextToken(out var token));
+			Assert.AreEqual(CssTokenType.Semicolon, token.Type);
+		}
+		[TestMethod]
+		public void SimpleToken_LeftSquareBracket()
+		{
+			var reader = new CssReader("[");
+			Assert.IsTrue(reader.NextToken(out var token));
+			Assert.AreEqual(CssTokenType.SquareBracketOpen, token.Type);
+		}
+		[TestMethod]
+		public void SimpleToken_RightSquareBracket()
+		{
+			var reader = new CssReader("]");
+			Assert.IsTrue(reader.NextToken(out var token));
+			Assert.AreEqual(CssTokenType.SquareBracketClose, token.Type);
+		}
+		[TestMethod]
+		public void SimpleToken_LeftCurlyBracket()
+		{
+			var reader = new CssReader("{");
+			Assert.IsTrue(reader.NextToken(out var token));
+			Assert.AreEqual(CssTokenType.CurlyBracketOpen, token.Type);
+		}
+		[TestMethod]
+		public void SimpleToken_RightCurlyBracket()
+		{
+			var reader = new CssReader("}");
+			Assert.IsTrue(reader.NextToken(out var token));
+			Assert.AreEqual(CssTokenType.CurlyBracketClose, token.Type);
+		}
+
+		[TestMethod]
 		public void String_Good()
 		{
 			var reader = new CssReader("\"Hello World\"");
@@ -103,6 +174,15 @@ namespace TurnerSoftware.CascadingStyles.Tests
 			Assert.AreEqual(CssTokenType.Number, token.Type);
 			Assert.AreEqual(CssTokenFlag.Number_Number, token.Flags);
 			Assert.AreEqual("1E-1", token.RawValue.ToString());
+		}
+		[TestMethod]
+		public void Number_ScientificNotation_MultiDigit()
+		{
+			var reader = new CssReader("1e+100");
+			Assert.IsTrue(reader.NextToken(out var token));
+			Assert.AreEqual(CssTokenType.Number, token.Type);
+			Assert.AreEqual(CssTokenFlag.Number_Number, token.Flags);
+			Assert.AreEqual("1e+100", token.RawValue.ToString());
 		}
 
 		[TestMethod]
