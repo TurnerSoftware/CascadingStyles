@@ -52,28 +52,28 @@ namespace TurnerSoftware.CascadingStyles.Tests
 		{
 			var reader = new CssReader("[");
 			Assert.IsTrue(reader.NextToken(out var token));
-			Assert.AreEqual(CssTokenType.SquareBracketOpen, token.Type);
+			Assert.AreEqual(CssTokenType.LeftSquareBracket, token.Type);
 		}
 		[TestMethod]
 		public void SimpleToken_RightSquareBracket()
 		{
 			var reader = new CssReader("]");
 			Assert.IsTrue(reader.NextToken(out var token));
-			Assert.AreEqual(CssTokenType.SquareBracketClose, token.Type);
+			Assert.AreEqual(CssTokenType.RightSquareBracket, token.Type);
 		}
 		[TestMethod]
 		public void SimpleToken_LeftCurlyBracket()
 		{
 			var reader = new CssReader("{");
 			Assert.IsTrue(reader.NextToken(out var token));
-			Assert.AreEqual(CssTokenType.CurlyBracketOpen, token.Type);
+			Assert.AreEqual(CssTokenType.LeftCurlyBracket, token.Type);
 		}
 		[TestMethod]
 		public void SimpleToken_RightCurlyBracket()
 		{
 			var reader = new CssReader("}");
 			Assert.IsTrue(reader.NextToken(out var token));
-			Assert.AreEqual(CssTokenType.CurlyBracketClose, token.Type);
+			Assert.AreEqual(CssTokenType.RightCurlyBracket, token.Type);
 		}
 
 		[TestMethod]

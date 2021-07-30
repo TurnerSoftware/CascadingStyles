@@ -47,12 +47,12 @@ namespace TurnerSoftware.CascadingStyles
 		Colon,
 		Semicolon,
 		Comma,
-		SquareBracketOpen,
-		SquareBracketClose,
-		RoundBracketOpen,
-		RoundBracketClose,
-		CurlyBracketOpen,
-		CurlyBracketClose
+		LeftSquareBracket,
+		RightSquareBracket,
+		LeftParenthesis,
+		RightParenthesis,
+		LeftCurlyBracket,
+		RightCurlyBracket
 	}
 
 	public enum CssTokenFlag

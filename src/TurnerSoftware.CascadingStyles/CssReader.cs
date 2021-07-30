@@ -197,7 +197,7 @@ namespace TurnerSoftware.CascadingStyles
 					token = ConsumeCommercialAtToToken();
 					break;
 				case '[':
-					token = ConsumeCurrentToToken(CssTokenType.SquareBracketOpen);
+					token = ConsumeCurrentToToken(CssTokenType.LeftSquareBracket);
 					break;
 				case '\\':
 					if (IsValidEscapeSequence())
@@ -208,13 +208,13 @@ namespace TurnerSoftware.CascadingStyles
 					token = ConsumeCurrentToToken(CssTokenType.Delimiter);
 					break;
 				case ']':
-					token = ConsumeCurrentToToken(CssTokenType.SquareBracketClose);
+					token = ConsumeCurrentToToken(CssTokenType.RightSquareBracket);
 					break;
 				case '{':
-					token = ConsumeCurrentToToken(CssTokenType.CurlyBracketOpen);
+					token = ConsumeCurrentToToken(CssTokenType.LeftCurlyBracket);
 					break;
 				case '}':
-					token = ConsumeCurrentToToken(CssTokenType.CurlyBracketClose);
+					token = ConsumeCurrentToToken(CssTokenType.RightCurlyBracket);
 					break;
 				default:
 					if (char.IsDigit(Current))
