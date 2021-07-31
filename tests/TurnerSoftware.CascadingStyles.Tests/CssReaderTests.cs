@@ -322,6 +322,13 @@ namespace TurnerSoftware.CascadingStyles.Tests
 			Assert.AreEqual(CssTokenType.BadUrl, token.Type);
 		}
 		[TestMethod]
+		public void Url_Invalid_Whitespace_EOF()
+		{
+			var reader = new CssReader("url(http:// example.org/  ");
+			Assert.IsTrue(reader.NextToken(out var token));
+			Assert.AreEqual(CssTokenType.BadUrl, token.Type);
+		}
+		[TestMethod]
 		public void Url_Invalid_DoubleQuote()
 		{
 			var reader = new CssReader("url(http://example.org/\")");
