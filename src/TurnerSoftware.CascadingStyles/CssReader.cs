@@ -1,8 +1,20 @@
 ﻿using System;
-using System.Text;
 
 namespace TurnerSoftware.CascadingStyles
 {
+	/// <summary>
+	/// Provides CSS tokenization support, closely following the <a href="https://drafts.csswg.org/css-syntax/#tokenization">official CSS specification</a>.
+	/// </summary>
+	/// <remarks>
+	/// <para>
+	/// The tokenization is not entirely standards compliant due to these caveats:
+	/// <br/>- Escape sequences are not unescaped - you must call <see cref="TokenizationHelper.UnescapeValue(CssToken)"/> to unescape a value.
+	/// <br/>- Numbers provided in tokens are still <see cref="ReadOnlySpan{char}"/> - you must call <see cref="TokenizationHelper.GetNumber(CssToken)"/> to get the real value.
+	/// </para>
+	/// <para>
+	/// These deviations from the standard allow the tokenizer to be allocation-free in its processing.
+	/// </para>
+	/// </remarks>
 	public ref struct CssReader
 	{
 		public const char EndOfFile = char.MaxValue;
