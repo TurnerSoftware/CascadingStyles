@@ -13,6 +13,79 @@ namespace TurnerSoftware.CascadingStyles.Tests
 		}
 
 		[TestMethod]
+		public void Whitespace_Space()
+		{
+			var reader = new CssReader(" ");
+			Assert.IsTrue(reader.NextToken(out var token));
+			Assert.AreEqual(CssTokenType.Whitespace, token.Type);
+			Assert.AreEqual(" ", token.RawValue.ToString());
+		}
+		[TestMethod]
+		public void Whitespace_Tab()
+		{
+			var reader = new CssReader("\t");
+			Assert.IsTrue(reader.NextToken(out var token));
+			Assert.AreEqual(CssTokenType.Whitespace, token.Type);
+			Assert.AreEqual("\t", token.RawValue.ToString());
+		}
+		[TestMethod]
+		public void Whitespace_CarriageReturn()
+		{
+			var reader = new CssReader("\r");
+			Assert.IsTrue(reader.NextToken(out var token));
+			Assert.AreEqual(CssTokenType.Whitespace, token.Type);
+			Assert.AreEqual("\r", token.RawValue.ToString());
+		}
+		[TestMethod]
+		public void Whitespace_NewLine()
+		{
+			var reader = new CssReader("\n");
+			Assert.IsTrue(reader.NextToken(out var token));
+			Assert.AreEqual(CssTokenType.Whitespace, token.Type);
+			Assert.AreEqual("\n", token.RawValue.ToString());
+		}
+		[TestMethod]
+		public void Whitespace_FormFeed()
+		{
+			var reader = new CssReader("\f");
+			Assert.IsTrue(reader.NextToken(out var token));
+			Assert.AreEqual(CssTokenType.Whitespace, token.Type);
+			Assert.AreEqual("\f", token.RawValue.ToString());
+		}
+
+		[TestMethod]
+		public void CDO_Partial_1()
+		{
+			var reader = new CssReader("<");
+			Assert.IsTrue(reader.NextToken(out var token));
+			Assert.AreEqual(CssTokenType.Delimiter, token.Type);
+			Assert.AreEqual("<", token.RawValue.ToString());
+		}
+		[TestMethod]
+		public void CDO_Partial_2()
+		{
+			var reader = new CssReader("<!");
+			Assert.IsTrue(reader.NextToken(out var token));
+			Assert.AreEqual(CssTokenType.Delimiter, token.Type);
+			Assert.AreEqual("<", token.RawValue.ToString());
+		}
+		[TestMethod]
+		public void CDO_Partial_3()
+		{
+			var reader = new CssReader("<!-");
+			Assert.IsTrue(reader.NextToken(out var token));
+			Assert.AreEqual(CssTokenType.Delimiter, token.Type);
+			Assert.AreEqual("<", token.RawValue.ToString());
+		}
+		[TestMethod]
+		public void CDO_Valid()
+		{
+			var reader = new CssReader("<!--");
+			Assert.IsTrue(reader.NextToken(out var token));
+			Assert.AreEqual(CssTokenType.CDO, token.Type);
+		}
+
+		[TestMethod]
 		public void SimpleToken_LeftParenthesis()
 		{
 			var reader = new CssReader("(");
@@ -183,6 +256,84 @@ namespace TurnerSoftware.CascadingStyles.Tests
 			Assert.AreEqual(CssTokenType.Number, token.Type);
 			Assert.AreEqual(CssTokenFlag.Number_Number, token.Flags);
 			Assert.AreEqual("1e+100", token.RawValue.ToString());
+		}
+
+		[TestMethod]
+		public void Url_Common()
+		{
+			var reader = new CssReader("url(http://example.org/)");
+			Assert.IsTrue(reader.NextToken(out var token));
+			Assert.AreEqual(CssTokenType.Url, token.Type);
+			Assert.AreEqual("http://example.org/", token.RawValue.ToString());
+		}
+		[TestMethod]
+		public void Url_WrappedDoubleQuote()
+		{
+			var reader = new CssReader("url(\"http://example.org/\")");
+			Assert.IsTrue(reader.NextToken(out var token));
+			Assert.AreEqual(CssTokenType.Function, token.Type);
+			Assert.AreEqual("url", token.RawValue.ToString());
+		}
+		[TestMethod]
+		public void Url_WrappedSingleQuote()
+		{
+			var reader = new CssReader("url('http://example.org/')");
+			Assert.IsTrue(reader.NextToken(out var token));
+			Assert.AreEqual(CssTokenType.Function, token.Type);
+			Assert.AreEqual("url", token.RawValue.ToString());
+		}
+		[TestMethod]
+		public void Url_LeadingWhitespace()
+		{
+			var reader = new CssReader("url(  http://example.org/)");
+			Assert.IsTrue(reader.NextToken(out var token));
+			Assert.AreEqual(CssTokenType.Url, token.Type);
+			Assert.AreEqual("http://example.org/", token.RawValue.ToString());
+		}
+		[TestMethod]
+		public void Url_TrailingWhitespace()
+		{
+			var reader = new CssReader("url(http://example.org/  )");
+			Assert.IsTrue(reader.NextToken(out var token));
+			Assert.AreEqual(CssTokenType.Url, token.Type);
+			Assert.AreEqual("http://example.org/", token.RawValue.ToString());
+		}
+		[TestMethod]
+		public void Url_EmptyUrl()
+		{
+			var reader = new CssReader("url()");
+			Assert.IsTrue(reader.NextToken(out var token));
+			Assert.AreEqual(CssTokenType.Url, token.Type);
+			Assert.AreEqual(string.Empty, token.RawValue.ToString());
+		}
+		[TestMethod]
+		public void Url_EOF()
+		{
+			var reader = new CssReader("url(http://example.org/");
+			Assert.IsTrue(reader.NextToken(out var token));
+			Assert.AreEqual(CssTokenType.Url, token.Type);
+			Assert.AreEqual("http://example.org/", token.RawValue.ToString());
+		}
+		[TestMethod]
+		public void Url_Invalid_Whitespace()
+		{
+			var reader = new CssReader("url(http:// example.org/)");
+			Assert.IsTrue(reader.NextToken(out var token));
+			Assert.AreEqual(CssTokenType.BadUrl, token.Type);
+		}
+		[TestMethod]
+		public void Url_Invalid_DoubleQuote()
+		{
+			var reader = new CssReader("url(http://example.org/\")");
+			Assert.IsTrue(reader.NextToken(out var token));
+			Assert.AreEqual(CssTokenType.BadUrl, token.Type);
+		}
+		[TestMethod]
+		public void Url_Invalid_SecondLeftParenthesis()
+		{
+			var reader = new CssReader("url((http://example.org/)");
+			Assert.IsTrue(reader.NextToken(out var token));
+			Assert.AreEqual(CssTokenType.BadUrl, token.Type);
 		}
 
 		[TestMethod]
