@@ -33,6 +33,11 @@ namespace TurnerSoftware.CascadingStyles
 			}
 		}
 
+		/// <summary>
+		/// The unconsumed "remaining" input stream data
+		/// </summary>
+		private ReadOnlySpan<char> RemainingInputStream => InputStream[CurrentIndex..];
+
 		private char Peek(int distance = 1)
 		{
 			var nextIndex = CurrentIndex + distance;
@@ -249,7 +254,7 @@ namespace TurnerSoftware.CascadingStyles
 			// followed by a U+002F SOLIDUS (/), or up to an EOF code point.
 			if (Current == '/' && Peek() == '*')
 			{
-				var matchIndex = InputStream[CurrentIndex..].IndexOf("*/");
+				var matchIndex = RemainingInputStream.IndexOf("*/");
 				// No closing comment found / it closes at the end of the file
 				if (matchIndex == -1)
 				{
@@ -637,28 +642,38 @@ namespace TurnerSoftware.CascadingStyles
 		/// <returns></returns>
 		private CssToken ConsumeRemnantsOfBadUrlToToken()
 		{
+			// Repeatedly consume the next input code point from the stream:
 			while (true)
 			{
-				//TODO: May be able to optimize this using IndexOf('\') - if found, jump to it
-				//		If not found, IndexOf(')').
-				//		If not found, jump to end.
-				//		May also not be worth optimizing as it is the exceptional case
-				ConsumeCurrent();
-				if (Current == ')')
+				var nextRightParenthesis = RemainingInputStream.IndexOf(')');
+
+				// If a U+0029 RIGHT PARENTHESIS ()) or EOF is found, consume and return
+				// In this case, if no right parenthesis is found, we can jump to the EOF
+				if (nextRightParenthesis == -1)
 				{
-					ConsumeCurrent();
-					return new CssToken(Span<char>.Empty, CssTokenType.BadUrl);
+					RegionStartIndex = InputStream.Length;
+					IndexOffset = 0;
+					break;
 				}
-				else if (Current == EndOfFile)
+
+				// Consume an escaped code point. This allows an escaped right parenthesis ("\)")
+				// to be encountered without ending the <bad-url-token>.
+				// We backtrack from the index of the right parenthesis to check
+				var isEscaped = nextRightParenthesis > 0 && RemainingInputStream[nextRightParenthesis - 1] == '\\';
+
+				// Either way, we consume all the characters we've found
+				ConsumeNext(nextRightParenthesis + 1);
+
+				// If the right parenthesis is escaped, skip it and find the next one
+				if (isEscaped)
 				{
-					return new CssToken(Span<char>.Empty, CssTokenType.BadUrl);
+					continue;
 				}
-				else if (Current == '\\')
-				{
-					// The next character is escaped - doesn't matter how we handle it
-					ConsumeCurrent();
-				}
+
+				break;
 			}
+
+			return new CssToken(Span<char>.Empty, CssTokenType.BadUrl);
 		}
 
 		/// <summary>
