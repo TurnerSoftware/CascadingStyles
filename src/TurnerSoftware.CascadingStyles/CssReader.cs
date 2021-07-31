@@ -517,21 +517,22 @@ namespace TurnerSoftware.CascadingStyles
 			if (identifier.Equals("url", StringComparison.OrdinalIgnoreCase) && Current == '(')
 			{
 				ConsumeCurrent();
+
 				// While the next two input code points are whitespace, consume the next input code point
-				if (IsWhitespace())
+				if (IsWhitespace() && IsWhitespace(Peek()))
 				{
 					ConsumeCurrent();
+				}
 
-					// If the next one or two input code points are U+0022 QUOTATION MARK ("), U+0027 APOSTROPHE ('),
-					// or whitespace followed by U+0022 QUOTATION MARK (") or U+0027 APOSTROPHE ('),
-					// then create a <function-token> with its value set to string and return it.
-					if (
-						Current == '"' || Current == '\'' ||
-						(Current == ' ' && (Peek() == '"' || Peek() == '\''))
-					)
-					{
-						return new CssToken(identifier, CssTokenType.Function);
-					}
+				// If the next one or two input code points are U+0022 QUOTATION MARK ("), U+0027 APOSTROPHE ('),
+				// or whitespace followed by U+0022 QUOTATION MARK (") or U+0027 APOSTROPHE ('),
+				// then create a <function-token> with its value set to string and return it.
+				if (
+					Current == '"' || Current == '\'' ||
+					(Current == ' ' && (Peek() == '"' || Peek() == '\''))
+				)
+				{
+					return new CssToken(identifier, CssTokenType.Function);
 				}
 
 				return ConsumeUrlToToken();
@@ -559,9 +560,9 @@ namespace TurnerSoftware.CascadingStyles
 			// Consume as much whitespace as possible
 			while (true)
 			{
-				ConsumeCurrent();
 				if (IsWhitespace())
 				{
+					ConsumeCurrent();
 					continue;
 				}
 				break;
@@ -583,12 +584,14 @@ namespace TurnerSoftware.CascadingStyles
 				}
 				else if (IsWhitespace())
 				{
+					var urlValue = GetRegion();
+
 					// Consume as much whitespace as possible
 					while (true)
 					{
-						ConsumeCurrent();
 						if (IsWhitespace())
 						{
+							ConsumeCurrent();
 							continue;
 						}
 						break;
@@ -597,7 +600,10 @@ namespace TurnerSoftware.CascadingStyles
 					if (Current == ')' || Current == EndOfFile)
 					{
 						// If EOF was encountered, this is a parse error BUT still return the <url-token>
-						return ConsumeRegionToToken(CssTokenType.Url);
+						var token = new CssToken(urlValue, CssTokenType.Url);
+						StartNewCaptureRegion();
+						return token;
+
 					}
 					return ConsumeRemnantsOfBadUrlToToken();
 				}
@@ -747,13 +753,24 @@ namespace TurnerSoftware.CascadingStyles
 		/// <a href="https://drafts.csswg.org/css-syntax/#whitespace">4.2. Definitions (Whitespace)</a>
 		/// </summary>
 		/// <returns></returns>
-		private bool IsWhitespace()
+		private static bool IsWhitespace(char value)
 		{
-			return Current switch
+			return value switch
 			{
 				' ' or '\t' or '\r' or '\n' or '\f' => true,
 				_ => false,
 			};
+		}
+		/// <summary>
+		/// <a href="https://drafts.csswg.org/css-syntax/#whitespace">4.2. Definitions (Whitespace)</a>
+		/// </summary>
+		/// <remarks>
+		/// Checks the <see cref="Current"/> character.
+		/// </remarks>
+		/// <returns></returns>
+		private bool IsWhitespace()
+		{
+			return IsWhitespace(Current);
 		}
 
 		/// <summary>
