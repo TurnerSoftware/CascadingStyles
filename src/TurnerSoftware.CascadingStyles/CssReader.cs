@@ -673,7 +673,7 @@ namespace TurnerSoftware.CascadingStyles
 				break;
 			}
 
-			return new CssToken(Span<char>.Empty, CssTokenType.BadUrl);
+			return new CssToken(CssTokenType.BadUrl);
 		}
 
 		/// <summary>
