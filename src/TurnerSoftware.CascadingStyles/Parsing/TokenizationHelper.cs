@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text;
 
-namespace TurnerSoftware.CascadingStyles
+namespace TurnerSoftware.CascadingStyles.Parsing
 {
 	public static class TokenizationHelper
 	{
@@ -98,13 +98,13 @@ namespace TurnerSoftware.CascadingStyles
 			return value.ToString();
 		}
 
-		public static string UnescapeValue(this CssToken token) => UnescapeValue(token.RawValue);
+		public static string UnescapeValue(this CssToken token) => UnescapeValue(token.RawValue.Span);
 
-		public static string UnescapeSecondaryValue(this CssToken token) => UnescapeValue(token.RawSecondaryValue);
+		public static string UnescapeSecondaryValue(this CssToken token) => UnescapeValue(token.RawSecondaryValue.Span);
 
 		public static decimal GetNumber(this CssToken token) => token.Type switch
 		{
-			CssTokenType.Number or CssTokenType.Dimension => decimal.Parse(token.RawValue, System.Globalization.NumberStyles.Number),
+			CssTokenType.Number or CssTokenType.Dimension => decimal.Parse(token.RawValue.Span, System.Globalization.NumberStyles.Number),
 			_ => throw new InvalidOperationException("Token is not of a valid type to decode a number from"),
 		};
 	}

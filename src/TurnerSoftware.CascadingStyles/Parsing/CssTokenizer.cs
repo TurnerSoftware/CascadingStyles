@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TurnerSoftware.CascadingStyles
+namespace TurnerSoftware.CascadingStyles.Parsing
 {
 	/// <summary>
 	/// Provides CSS tokenization support, closely following the <a href="https://drafts.csswg.org/css-syntax/#tokenization">official CSS specification</a>.
@@ -15,15 +15,15 @@ namespace TurnerSoftware.CascadingStyles
 	/// These deviations from the standard allow the tokenizer to be allocation-free in its processing.
 	/// </para>
 	/// </remarks>
-	public ref struct CssReader
+	public struct CssTokenizer
 	{
 		public const char EndOfFile = char.MaxValue;
 
-		private readonly ReadOnlySpan<char> InputStream;
+		private readonly ReadOnlyMemory<char> InputStream;
 		private int RegionStartIndex;
 		private int IndexOffset;
 
-		public CssReader(ReadOnlySpan<char> value)
+		public CssTokenizer(ReadOnlyMemory<char> value)
 		{
 			InputStream = value;
 			RegionStartIndex = 0;
@@ -38,7 +38,7 @@ namespace TurnerSoftware.CascadingStyles
 			{
 				if (CurrentIndex < InputStream.Length)
 				{
-					return InputStream[CurrentIndex];
+					return InputStream.Span[CurrentIndex];
 				}
 
 				return EndOfFile;
@@ -48,14 +48,14 @@ namespace TurnerSoftware.CascadingStyles
 		/// <summary>
 		/// The unconsumed "remaining" input stream data
 		/// </summary>
-		private ReadOnlySpan<char> RemainingInputStream => InputStream[CurrentIndex..];
+		private ReadOnlyMemory<char> RemainingInputStream => InputStream.Slice(CurrentIndex);
 
 		private char Peek(int distance = 1)
 		{
 			var nextIndex = CurrentIndex + distance;
 			if (nextIndex < InputStream.Length)
 			{
-				return InputStream[nextIndex];
+				return InputStream.Span[nextIndex];
 			}
 
 			return EndOfFile;
@@ -65,9 +65,9 @@ namespace TurnerSoftware.CascadingStyles
 		/// Returns the region starting from <see cref="RegionStartIndex"/> to, but not including, <see cref="CurrentIndex"/>.
 		/// </summary>
 		/// <returns></returns>
-		private ReadOnlySpan<char> GetRegion()
+		private ReadOnlyMemory<char> GetRegion()
 		{
-			return InputStream[RegionStartIndex..CurrentIndex];
+			return InputStream.Slice(RegionStartIndex, IndexOffset);
 		}
 
 		/// <summary>
@@ -75,7 +75,7 @@ namespace TurnerSoftware.CascadingStyles
 		/// Region is from <see cref="RegionStartIndex"/> to, but not including, <see cref="CurrentIndex"/>.
 		/// </summary>
 		/// <returns></returns>
-		private ReadOnlySpan<char> ConsumeRegion()
+		private ReadOnlyMemory<char> ConsumeRegion()
 		{
 			var result = GetRegion();
 			StartNewCaptureRegion();
@@ -136,7 +136,7 @@ namespace TurnerSoftware.CascadingStyles
 		{
 			if (RegionStartIndex == InputStream.Length)
 			{
-				token = default;
+				token = CssToken.EndOfFile;
 				return false;
 			}
 
@@ -248,7 +248,7 @@ namespace TurnerSoftware.CascadingStyles
 					}
 					else
 					{
-						token = default;
+						token = CssToken.EndOfFile;
 						return false;
 					}
 					break;
@@ -266,7 +266,7 @@ namespace TurnerSoftware.CascadingStyles
 			// followed by a U+002F SOLIDUS (/), or up to an EOF code point.
 			if (Current == '/' && Peek() == '*')
 			{
-				var matchIndex = RemainingInputStream.IndexOf("*/");
+				var matchIndex = RemainingInputStream.Span.IndexOf("*/");
 				// No closing comment found / it closes at the end of the file
 				if (matchIndex == -1)
 				{
@@ -531,7 +531,7 @@ namespace TurnerSoftware.CascadingStyles
 			var identifier = ConsumeIdentifier();
 
 			// If identifier matches "url" (case-insensitive) and the next input code point is U+0028 LEFT PARENTHESIS, consume it
-			if (identifier.Equals("url", StringComparison.OrdinalIgnoreCase) && Current == '(')
+			if (identifier.Span.Equals("url", StringComparison.OrdinalIgnoreCase) && Current == '(')
 			{
 				ConsumeCurrent();
 
@@ -654,10 +654,12 @@ namespace TurnerSoftware.CascadingStyles
 		/// <returns></returns>
 		private CssToken ConsumeRemnantsOfBadUrlToToken()
 		{
+			var remainingInputSpan = RemainingInputStream.Span;
+
 			// Repeatedly consume the next input code point from the stream:
 			while (true)
 			{
-				var nextRightParenthesis = RemainingInputStream.IndexOf(')');
+				var nextRightParenthesis = remainingInputSpan.IndexOf(')');
 
 				// If a U+0029 RIGHT PARENTHESIS ()) or EOF is found, consume and return
 				// In this case, if no right parenthesis is found, we can jump to the EOF
@@ -671,7 +673,7 @@ namespace TurnerSoftware.CascadingStyles
 				// Consume an escaped code point. This allows an escaped right parenthesis ("\)")
 				// to be encountered without ending the <bad-url-token>.
 				// We backtrack from the index of the right parenthesis to check
-				var isEscaped = nextRightParenthesis > 0 && RemainingInputStream[nextRightParenthesis - 1] == '\\';
+				var isEscaped = nextRightParenthesis > 0 && remainingInputSpan[nextRightParenthesis - 1] == '\\';
 
 				// Either way, we consume all the characters we've found
 				ConsumeNext(nextRightParenthesis + 1);
@@ -693,7 +695,7 @@ namespace TurnerSoftware.CascadingStyles
 		/// </summary>
 		/// <param name="seenDecimal"></param>
 		/// <returns></returns>
-		private void ConsumeNumber(out ReadOnlySpan<char> number, out CssTokenFlag flags)
+		private void ConsumeNumber(out ReadOnlyMemory<char> number, out CssTokenFlag flags)
 		{
 			var startIndex = CurrentIndex;
 
@@ -757,7 +759,7 @@ namespace TurnerSoftware.CascadingStyles
 		/// Assumes that <see cref="Current"/> is the start of the identifier.
 		/// </remarks>
 		/// <returns></returns>
-		private ReadOnlySpan<char> ConsumeIdentifier()
+		private ReadOnlyMemory<char> ConsumeIdentifier()
 		{
 			var startIndex = CurrentIndex;
 			while (true)
