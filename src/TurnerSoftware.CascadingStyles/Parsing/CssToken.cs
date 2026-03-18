@@ -1,7 +1,4 @@
 ﻿using System;
-using System.ComponentModel;
-
-#pragma warning disable 0809 // Obsolete member overrides non-obsolete member
 
 namespace TurnerSoftware.CascadingStyles.Parsing
 {
@@ -22,6 +19,14 @@ namespace TurnerSoftware.CascadingStyles.Parsing
 			RawSecondaryValue = default;
 		}
 
+		public CssToken(string rawValue, CssTokenType type, CssTokenFlag flags = CssTokenFlag.None, string secondaryValue = default)
+		{
+			RawValue = rawValue.AsMemory();
+			Type = type;
+			Flags = flags;
+			RawSecondaryValue = secondaryValue.AsMemory();
+		}
+
 		public CssToken(ReadOnlyMemory<char> rawValue, CssTokenType type, CssTokenFlag flags = CssTokenFlag.None, ReadOnlyMemory<char> secondaryValue = default)
 		{
 			RawValue = rawValue;
@@ -33,17 +38,40 @@ namespace TurnerSoftware.CascadingStyles.Parsing
 		public static bool operator !=(CssToken left, CssToken right) => !(left == right);
 
 		public static bool operator ==(CssToken left, CssToken right) =>
-			left.RawValue.Equals(right) &&
+			left.RawValue.Span.Equals(right.RawValue.Span, StringComparison.OrdinalIgnoreCase) &&
 			left.Type == right.Type &&
 			left.Flags == right.Flags &&
-			left.RawSecondaryValue.Equals(right);
+			left.RawSecondaryValue.Span.Equals(right.RawSecondaryValue.Span, StringComparison.OrdinalIgnoreCase);
 
-		[Obsolete("Equals() on CssToken will always throw an exception. Use == instead.")]
-		[EditorBrowsable(EditorBrowsableState.Never)]
-		public override bool Equals(object obj) => throw new NotSupportedException();
-		[Obsolete("GetHashCode() on CssToken will always throw an exception.")]
-		[EditorBrowsable(EditorBrowsableState.Never)]
-		public override int GetHashCode() => throw new NotSupportedException();
+		public override bool Equals(object obj) => obj is CssToken token && 
+			this == token;
+		
+		public override int GetHashCode() => HashCode.Combine(RawValue, Type, Flags, RawSecondaryValue);
+
+		public override string ToString()
+		{
+			return Type switch
+			{
+				CssTokenType.Delimiter or CssTokenType.Number => RawValue.ToString(),
+				CssTokenType.AtKeyword => "@",
+				CssTokenType.Colon => ":",
+				CssTokenType.Semicolon => ";",
+				CssTokenType.Comma => ",",
+				CssTokenType.String => $"\"{RawValue}\"",
+				CssTokenType.Dimension => $"{RawValue}{RawSecondaryValue}",
+				CssTokenType.Percentage => "%",
+				CssTokenType.Identifier => RawValue.ToString(),
+				CssTokenType.LeftCurlyBracket => "{",
+				CssTokenType.RightCurlyBracket => "}",
+				CssTokenType.LeftSquareBracket => "[",
+				CssTokenType.RightSquareBracket => "]",
+				CssTokenType.LeftParenthesis => "(",
+				CssTokenType.RightParenthesis => ")",
+				CssTokenType.Whitespace => RawValue.ToString(),
+				CssTokenType.Hash => "#",
+				_ => string.Empty
+			};
+		}
 	}
 
 	public enum CssTokenType

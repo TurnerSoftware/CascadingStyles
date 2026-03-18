@@ -697,7 +697,7 @@ namespace TurnerSoftware.CascadingStyles.Parsing
 		/// <returns></returns>
 		private void ConsumeNumber(out ReadOnlyMemory<char> number, out CssTokenFlag flags)
 		{
-			var startIndex = CurrentIndex;
+			StartNewCaptureRegion();
 
 			// Initially set type to "integer".
 			flags = CssTokenFlag.Number_Integer;
@@ -749,7 +749,7 @@ namespace TurnerSoftware.CascadingStyles.Parsing
 				}
 			}
 
-			number = InputStream[startIndex..CurrentIndex];
+			number = ConsumeRegion();
 		}
 
 		/// <summary>
@@ -761,7 +761,7 @@ namespace TurnerSoftware.CascadingStyles.Parsing
 		/// <returns></returns>
 		private ReadOnlyMemory<char> ConsumeIdentifier()
 		{
-			var startIndex = CurrentIndex;
+			StartNewCaptureRegion();
 			while (true)
 			{
 				ConsumeCurrent();
@@ -774,7 +774,7 @@ namespace TurnerSoftware.CascadingStyles.Parsing
 					ConsumeEscapeSequence();
 					continue;
 				}
-				return InputStream[startIndex..CurrentIndex];
+				return ConsumeRegion();
 			}
 		}
 

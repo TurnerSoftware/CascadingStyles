@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TurnerSoftware.CascadingStyles.Rules
+namespace TurnerSoftware.CascadingStyles.ObjectModel
 {
 	public static class StyleRuleExtensions
 	{
@@ -12,7 +12,7 @@ namespace TurnerSoftware.CascadingStyles.Rules
 		{
 			foreach (var (name, value) in properties)
 			{
-				styleRule.Style.Add(name, value);
+				//styleRule.Style.Add(name, value);
 			}
 
 			return styleRule;

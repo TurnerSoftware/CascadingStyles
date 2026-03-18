@@ -54,6 +54,15 @@ namespace TurnerSoftware.CascadingStyles.Tests
 			Assert.AreEqual(CssTokenType.Whitespace, token.Type);
 			Assert.AreEqual("\f", token.RawValue.ToString());
 		}
+		[TestMethod]
+		public void Whitespace_Mixed_LeadingIdentifier()
+		{
+			var tokenizer = new CssTokenizer("mixed  ".AsMemory());
+			Assert.IsTrue(tokenizer.NextToken(out _));
+			Assert.IsTrue(tokenizer.NextToken(out var token));
+			Assert.AreEqual(CssTokenType.Whitespace, token.Type);
+			Assert.AreEqual("  ", token.RawValue.ToString());
+		}
 
 		[TestMethod]
 		public void CDO_Partial_1()
